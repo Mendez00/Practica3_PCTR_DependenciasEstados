@@ -29,5 +29,4 @@ public class ActividadEntradaPuerta implements Runnable{
 				}
 			}
 		}
-
 }

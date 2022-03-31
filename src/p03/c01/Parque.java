@@ -7,11 +7,12 @@ public class Parque implements IParque{
 
 
 	// TODO 
+	private static final int AFORO_MAX = 50;
 	private int contadorPersonasTotales;
 	private Hashtable<String, Integer> contadoresPersonasPuerta;
 	
 	
-	public Parque() {	// TODO
+	public Parque() {	
 		contadorPersonasTotales = 0;
 		contadoresPersonasPuerta = new Hashtable<String, Integer>();
 		// TODO
@@ -19,7 +20,7 @@ public class Parque implements IParque{
 
 
 	@Override
-	public void entrarAlParque(String puerta){		// TODO
+	public void entrarAlParque(String puerta){		
 		
 		// Si no hay entradas por esa puerta, inicializamos
 		if (contadoresPersonasPuerta.get(puerta) == null){
@@ -43,10 +44,11 @@ public class Parque implements IParque{
 		
 	}
 	
-	// 
-	// TODO Método salirDelParque
-	//
-	
+		@Override
+	public void salirDelParque(String puerta) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	private void imprimirInfo (String puerta, String movimiento){
 		System.out.println(movimiento + " por puerta " + puerta);
@@ -85,6 +87,9 @@ public class Parque implements IParque{
 		// TODO
 		//
 	}
+
+
+
 
 
 }
