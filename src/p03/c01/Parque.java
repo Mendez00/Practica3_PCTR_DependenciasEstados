@@ -6,7 +6,6 @@ import java.util.Hashtable;
 public class Parque implements IParque{
 
 
-	// TODO 
 	private static final int AFORO_MAX = 50;
 	private int contadorPersonasTotales;
 	private Hashtable<String, Integer> contadoresPersonasPuerta;
@@ -15,19 +14,24 @@ public class Parque implements IParque{
 	public Parque() {	
 		contadorPersonasTotales = 0;
 		contadoresPersonasPuerta = new Hashtable<String, Integer>();
-		// TODO
 	}
 
 
 	@Override
-	public void entrarAlParque(String puerta){		
+	public synchronized void entrarAlParque(String puerta){		
+
 		
 		// Si no hay entradas por esa puerta, inicializamos
 		if (contadoresPersonasPuerta.get(puerta) == null){
 			contadoresPersonasPuerta.put(puerta, 0);
 		}
 		
-		// TODO
+		
+		try {
+			this.comprobarAntesDeEntrar();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 				
 		
 		// Aumentamos el contador total y el individual
@@ -37,17 +41,35 @@ public class Parque implements IParque{
 		// Imprimimos el estado del parque
 		imprimirInfo(puerta, "Entrada");
 		
-		// TODO
-		
-		
-		// TODO
+		checkInvariante();
+		notifyAll();
 		
 	}
 	
-		@Override
-	public void salirDelParque(String puerta) {
-		// TODO Auto-generated method stub
+	@Override
+	public synchronized void salirDelParque(String puerta) {
+		// Si no hay salidas por esa puerta, inicializamos
+		if (contadoresPersonasPuerta.get(puerta) == null){
+			contadoresPersonasPuerta.put(puerta, 0);
+		}
 		
+	
+		try {
+			this.comprobarAntesDeSalir();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+				
+		
+		// Aumentamos el contador total y el individual
+		contadorPersonasTotales--;		
+		contadoresPersonasPuerta.put(puerta, contadoresPersonasPuerta.get(puerta)-1);
+		
+		// Imprimimos el estado del parque
+		imprimirInfo(puerta, "Salida");
+		
+		checkInvariante();
+		notifyAll();
 	}
 	
 	private void imprimirInfo (String puerta, String movimiento){
@@ -72,24 +94,20 @@ public class Parque implements IParque{
 	
 	protected void checkInvariante() {
 		assert sumarContadoresPuerta() == contadorPersonasTotales : "INV: La suma de contadores de las puertas debe ser igual al valor del contador del parte";
-		// TODO 
-		// TODO
+		assert contadorPersonasTotales <= AFORO_MAX : "INV: El parque ha superado su capacidad";
+		assert contadorPersonasTotales >= 0 : "INV: El parque tiene menos personas de lo posible";
 	}
 
-	protected void comprobarAntesDeEntrar(){	// TODO
-		//
-		// TODO
-		//
+	protected void comprobarAntesDeEntrar() throws InterruptedException{	
+		while (contadorPersonasTotales == AFORO_MAX) {
+			wait();
+		}
 	}
 
-	protected void comprobarAntesDeSalir(){		// TODO
-		//
-		// TODO
-		//
+	protected synchronized void comprobarAntesDeSalir() throws InterruptedException{	
+		while (contadorPersonasTotales == 0) {
+			wait();
+		}
 	}
-
-
-
-
-
 }
+
